@@ -1,0 +1,119 @@
+******************************************************************************************************
+Name : Prafulla Bharate
+roll no : 23104
+batch: T1
+assignment : Cursors: write a PL\SQL block of code using parameterized cursor . 
+*****************************************************************************************************
+mysql> create database record;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> use record;
+Database changed
+mysql> create table o_rollcall(rno int(11) primary key not null,name varchar(20),addr varchar(30));
+Query OK, 0 rows affected, 1 warning (0.04 sec)
+
+mysql> create table n_rollcall(rno int(11) ,name varchar(20),addr varchar(30));
+Query OK, 0 rows affected, 1 warning (0.03 sec)
+
+mysql> insert into o_rollcall values(1,'sunny','wabletown'),(2,'harshit','naxal forest'),(3,'vivek','latur pond'),(4,'sahil','mumbai floods');
+Query OK, 4 rows affected (0.02 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql>  insert into n_rollcall values(1,'sunny','wabletown'),(2,'harshit','naxal forest'),(3,'vivek','latur pond');
+Query OK, 3 rows affected (0.02 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> desc o_rollcall;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| rno   | int         | NO   | PRI | NULL    |       |
+| name  | varchar(20) | YES  |     | NULL    |       |
+| addr  | varchar(30) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> desc n_rollcall;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| rno   | int         | YES  |     | NULL    |       |
+| name  | varchar(20) | YES  |     | NULL    |       |
+| addr  | varchar(30) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select*from o_rollcall;
++-----+---------+---------------+
+| rno | name    | addr          |
++-----+---------+---------------+
+|   1 | sunny   | wabletown     |
+|   2 | harshit | naxal forest  |
+|   3 | vivek   | latur pond    |
+|   4 | sahil   | mumbai floods |
++-----+---------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> select*from n_rollcall;
++------+---------+--------------+
+| rno  | name    | addr         |
++------+---------+--------------+
+|    1 | sunny   | wabletown    |
+|    2 | harshit | naxal forest |
+|    3 | vivek   | latur pond   |
++------+---------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into o_rollcall values(5,'bitboi','bihar city bihar');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select*from o_rollcall;
++-----+---------+------------------+
+| rno | name    | addr             |
++-----+---------+------------------+
+|   1 | sunny   | wabletown        |
+|   2 | harshit | naxal forest     |
+|   3 | vivek   | latur pond       |
+|   4 | sahil   | mumbai floods    |
+|   5 | bitboi  | bihar city bihar |
++-----+---------+------------------+
+5 rows in set (0.00 sec)
+
+mysql> delimiter //
+mysql> create procedure n1(IN rno1 int)
+    -> begin
+    -> declare rno2 int;
+    -> declare exit_cond boolean;
+    -> declare c1 cursor for select rno from o_rollcall where rno>rno1;
+    -> declare continue handler for not found set exit_cond=TRUE;
+    -> open c1;
+    -> l1:loop
+    -> fetch c1 into rno2;
+    -> if not exists(select * from n_rollcall where rno= rno2) then
+    -> insert into n_rollcall select* from o_rollcall where rno=rno2;
+    -> end if;
+    -> if exit_cond then
+    -> close c1;
+    -> leave l1;
+    -> end if;
+    -> end loop l1;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> call n1(3);
+    -> //
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select*from n_rollcall;
+    -> //
++------+---------+------------------+
+| rno  | name    | addr             |
++------+---------+------------------+
+|    1 | sunny   | wabletown        |
+|    2 | harshit | naxal forest     |
+|    3 | vivek   | latur pond       |
+|    4 | sahil   | mumbai floods    |
+|    5 | bitboi  | bihar city bihar |
++------+---------+------------------+
+5 rows in set (0.00 sec)
