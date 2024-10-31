@@ -1,0 +1,63 @@
+## chatbot ##
+
+import random
+
+class CustomerServiceChatbot:
+    def __init__(self):
+        self.intro_responses = [
+            "Hello! I'm here to assist you with your queries.",
+            "Hi there! How can I help you today?",
+            "Welcome! What can I do for you?"
+        ]
+        self.services = [
+            "We offer a variety of services including customer support, product inquiries, and order tracking.",
+            "You can ask about our services, product details, or even request technical support.",
+            "I'm here to help with product information, support, or anything else you need."
+        ]
+        self.product_info = [
+            "You can find our products on our website. What specific product are you interested in?",
+            "We have a wide range of products. Let me know what you're looking for!",
+            "Please specify the product you're interested in so I can provide more details."
+        ]
+        self.support_info = [
+            "For support, you can reach us via email or call our support line. How can I assist you with support?",
+            "I'm here to help with any support issues you might have. Can you describe the problem?",
+            "Our support team is available 24/7. What assistance do you need?"
+        ]
+        self.farewell_responses = [
+            "Thank you for chatting with me! Have a great day!",
+            "It was nice talking to you! If you need anything else, feel free to reach out.",
+            "Goodbye! I'm here whenever you need help."
+        ]
+
+    def start_chat(self):
+        print(random.choice(self.intro_responses))
+        while True:
+            user_input = input("> ").strip().lower()
+            if "bye" in user_input or "exit" in user_input:
+                print(random.choice(self.farewell_responses))
+                break
+            elif "services" in user_input:
+                print(random.choice(self.services))
+            elif "product" in user_input:
+                print(random.choice(self.product_info))
+            elif "support" in user_input:
+                print(random.choice(self.support_info))
+            else:
+                print("I'm not sure how to respond to that. Can you ask about our services, products, or support?")
+
+if __name__ == "__main__":
+    chatbot = CustomerServiceChatbot()
+    chatbot.start_chat()
+
+
+OUTPUt :-
+Hello! I'm here to assist you with your queries.
+> tell me about your services
+You can ask about our services, product details, or even request technical support.
+> can you tell me about your product
+You can find our products on our website. What specific product are you interested in?
+> i neeed support with my order
+Our support team is available 24/7. What assistance do you need?
+> bye
+Thank you for chatting with me! Have a great day!

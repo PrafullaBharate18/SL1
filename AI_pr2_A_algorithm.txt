@@ -1,0 +1,775 @@
+#### A* algorithm ##
+
+class Node:
+    def __init__(self, data, level, fval):
+        self.data = data  # Current state of the puzzle
+        self.level = level  # Depth of the node
+        self.fval = fval  # The f value (g + h)
+
+    def generate_child(self):
+        x, y = self.find(self.data, '_')  # Find the blank space
+        # Possible moves for the blank space
+        val_list = [[x, y - 1], [x, y + 1], [x - 1, y], [x + 1, y]]
+        children = []
+        for i in val_list:
+            child = self.shuffle(self.data, x, y, i[0], i[1])
+            if child is not None:
+                child_node = Node(child, self.level + 1, 0)
+                children.append(child_node)
+        return children
+
+    def shuffle(self, puz, x1, y1, x2, y2):
+        if 0 <= x2 < len(self.data) and 0 <= y2 < len(self.data):
+            temp_puz = self.copy(puz)
+            temp_puz[x2][y2], temp_puz[x1][y1] = temp_puz[x1][y1], temp_puz[x2][y2]
+            return temp_puz
+        return None
+
+    def copy(self, root):
+        return [row[:] for row in root]  # Create a copy of the matrix
+
+    def find(self, puz, x):
+        for i in range(len(self.data)):
+            for j in range(len(self.data)):
+                if puz[i][j] == x:
+                    return i, j
+
+
+class Puzzle:
+    def __init__(self, size):
+        self.n = size  # Size of the puzzle
+        self.open = []  # Open list to hold nodes to explore
+        self.closed = set()  # Set to hold explored states
+
+    def accept(self):
+        # Accept puzzle from user
+        puz = []
+        for i in range(self.n):
+            temp = input().split(" ")
+            puz.append(temp)
+        return puz
+
+    def f(self, start, goal):
+        return self.h(start.data, goal) + start.level  # f(x) = g(x) + h(x)
+
+    def h(self, start, goal):
+        # Using Manhattan distance heuristic
+        temp = 0
+        for i in range(self.n):
+            for j in range(self.n):
+                if start[i][j] != goal[i][j] and start[i][j] != '_':
+                    x_goal, y_goal = divmod(int(start[i][j]) - 1, self.n)
+                    temp += abs(x_goal - i) + abs(y_goal - j)
+        return temp
+
+    def process(self):
+        print("Enter the start state matrix:")
+        start = self.accept()
+        print("Enter the goal state matrix:")
+        goal = self.accept()
+
+        start_node = Node(start, 0, 0)
+        start_node.fval = self.f(start_node, goal)
+        self.open.append(start_node)
+
+        print("\nExploring states...\n")
+
+        while True:
+            if not self.open:
+                print("No solution exists.")
+                return
+
+            cur = self.open[0]  # Get the node with the lowest f value
+            print("Current state:")
+            for row in cur.data:
+                print(" ".join(row))
+            print()
+
+            if self.h(cur.data, goal) == 0:  # Goal state reached
+                print("Goal state reached!")
+                return
+
+            # Generate children and add to open list
+            for child in cur.generate_child():
+                child.fval = self.f(child, goal)
+                if str(child.data) not in self.closed:  # Avoid revisiting
+                    self.open.append(child)
+            self.closed.add(str(cur.data))  # Add current state to closed
+            del self.open[0]  # Remove the node from the open list
+            self.open.sort(key=lambda x: x.fval)  # Sort open list by f value
+
+
+if __name__ == "__main__":
+    puzzle = Puzzle(3)  # Create a 3x3 puzzle
+    puzzle.process()  # Start processing
+
+
+
+OUTPUT :-
+Enter the start state matrix:
+1 2 3
+4 _ 5
+6 7 8
+Enter the goal state matrix:
+1 2 3
+4 5 6
+7 8 _
+
+Exploring states...
+
+Current state:
+1 2 3
+4 _ 5
+6 7 8
+
+Current state:
+1 2 3
+4 5 _
+6 7 8
+
+Current state:
+1 2 3
+_ 4 5
+6 7 8
+
+Current state:
+1 _ 3
+4 2 5
+6 7 8
+
+Current state:
+1 2 3
+4 7 5
+6 _ 8
+
+Current state:
+1 2 _
+4 5 3
+6 7 8
+
+Current state:
+1 2 3
+4 5 8
+6 7 _
+
+Current state:
+1 2 3
+6 4 5
+_ 7 8
+
+Current state:
+1 2 3
+4 7 5
+_ 6 8
+
+Current state:
+1 2 3
+4 7 5
+6 8 _
+
+Current state:
+1 2 3
+6 4 5
+7 _ 8
+
+Current state:
+1 2 3
+6 4 5
+7 8 _
+
+Current state:
+_ 2 3
+1 4 5
+6 7 8
+
+Current state:
+_ 1 3
+4 2 5
+6 7 8
+
+Current state:
+1 3 _
+4 2 5
+6 7 8
+
+Current state:
+1 _ 2
+4 5 3
+6 7 8
+
+Current state:
+1 2 3
+4 5 8
+6 _ 7
+
+Current state:
+1 2 3
+_ 7 5
+4 6 8
+
+Current state:
+1 2 3
+4 7 _
+6 8 5
+
+Current state:
+1 2 3
+6 _ 5
+7 4 8
+
+Current state:
+1 2 3
+6 4 _
+7 8 5
+
+Current state:
+1 2 3
+4 5 8
+_ 6 7
+
+Current state:
+1 2 3
+7 _ 5
+4 6 8
+
+Current state:
+1 2 3
+_ 6 5
+7 4 8
+
+Current state:
+1 2 3
+6 5 _
+7 4 8
+
+Current state:
+1 2 3
+7 5 _
+4 6 8
+
+Current state:
+1 2 3
+7 6 5
+4 _ 8
+
+Current state:
+1 2 3
+7 6 5
+4 8 _
+
+Current state:
+2 _ 3
+1 4 5
+6 7 8
+
+Current state:
+4 1 3
+_ 2 5
+6 7 8
+
+Current state:
+1 3 5
+4 2 _
+6 7 8
+
+Current state:
+_ 1 2
+4 5 3
+6 7 8
+
+Current state:
+1 5 2
+4 _ 3
+6 7 8
+
+Current state:
+1 2 3
+4 _ 8
+6 5 7
+
+Current state:
+_ 2 3
+1 7 5
+4 6 8
+
+Current state:
+1 2 3
+4 _ 7
+6 8 5
+
+Current state:
+1 2 _
+4 7 3
+6 8 5
+
+Current state:
+1 _ 3
+6 2 5
+7 4 8
+
+Current state:
+1 2 3
+6 _ 4
+7 8 5
+
+Current state:
+1 2 _
+6 4 3
+7 8 5
+
+Current state:
+1 2 3
+_ 5 8
+4 6 7
+
+Current state:
+1 _ 3
+7 2 5
+4 6 8
+
+Current state:
+_ 2 3
+1 6 5
+7 4 8
+
+Current state:
+1 2 3
+7 6 5
+_ 4 8
+
+Current state:
+1 2 _
+6 5 3
+7 4 8
+
+Current state:
+1 2 3
+6 5 8
+7 4 _
+
+Current state:
+1 2 _
+7 5 3
+4 6 8
+
+Current state:
+1 2 3
+7 5 8
+4 6 _
+
+Current state:
+1 2 3
+7 6 5
+_ 4 8
+
+Current state:
+1 2 3
+7 6 _
+4 8 5
+
+Current state:
+4 1 3
+6 2 5
+_ 7 8
+
+Current state:
+1 2 3
+4 8 _
+6 5 7
+
+Current state:
+1 2 3
+_ 6 4
+7 8 5
+
+Current state:
+1 2 3
+7 5 8
+4 _ 6
+
+Current state:
+1 2 3
+7 _ 6
+4 8 5
+
+Current state:
+4 1 3
+6 2 5
+7 _ 8
+
+Current state:
+4 1 3
+6 2 5
+7 8 _
+
+Current state:
+2 3 _
+1 4 5
+6 7 8
+
+Current state:
+2 4 3
+1 _ 5
+6 7 8
+
+Current state:
+4 1 3
+2 _ 5
+6 7 8
+
+Current state:
+1 3 5
+4 _ 2
+6 7 8
+
+Current state:
+1 3 5
+4 2 8
+6 7 _
+
+Current state:
+4 1 2
+_ 5 3
+6 7 8
+
+Current state:
+1 5 2
+_ 4 3
+6 7 8
+
+Current state:
+1 5 2
+4 3 _
+6 7 8
+
+Current state:
+1 5 2
+4 7 3
+6 _ 8
+
+Current state:
+1 2 3
+_ 4 8
+6 5 7
+
+Current state:
+1 _ 3
+4 2 8
+6 5 7
+
+Current state:
+2 _ 3
+1 7 5
+4 6 8
+
+Current state:
+1 2 3
+_ 4 7
+6 8 5
+
+Current state:
+1 _ 3
+4 2 7
+6 8 5
+
+Current state:
+1 2 3
+4 8 7
+6 _ 5
+
+Current state:
+1 _ 2
+4 7 3
+6 8 5
+
+Current state:
+_ 1 3
+6 2 5
+7 4 8
+
+Current state:
+1 3 _
+6 2 5
+7 4 8
+
+Current state:
+1 _ 3
+6 2 4
+7 8 5
+
+Current state:
+1 2 3
+6 8 4
+7 _ 5
+
+Current state:
+1 _ 2
+6 4 3
+7 8 5
+
+Current state:
+1 2 3
+5 _ 8
+4 6 7
+
+Current state:
+_ 2 3
+1 5 8
+4 6 7
+
+Current state:
+_ 1 3
+7 2 5
+4 6 8
+
+Current state:
+1 3 _
+7 2 5
+4 6 8
+
+Current state:
+2 _ 3
+1 6 5
+7 4 8
+
+Current state:
+1 _ 2
+6 5 3
+7 4 8
+
+Current state:
+1 2 3
+6 5 8
+7 _ 4
+
+Current state:
+1 _ 2
+7 5 3
+4 6 8
+
+Current state:
+1 2 _
+7 6 3
+4 8 5
+
+Current state:
+1 2 _
+4 8 3
+6 5 7
+
+Current state:
+1 2 3
+4 8 7
+6 5 _
+
+Current state:
+_ 2 3
+1 6 4
+7 8 5
+
+Current state:
+1 2 3
+7 6 4
+_ 8 5
+
+Current state:
+1 2 3
+7 5 8
+_ 4 6
+
+Current state:
+1 2 3
+7 _ 8
+4 5 6
+
+Current state:
+1 2 3
+_ 7 6
+4 8 5
+
+Current state:
+1 _ 3
+7 2 6
+4 8 5
+
+Current state:
+1 2 3
+7 8 6
+4 _ 5
+
+Current state:
+4 1 3
+6 _ 5
+7 2 8
+
+Current state:
+4 1 3
+6 2 _
+7 8 5
+
+Current state:
+2 4 3
+1 5 _
+6 7 8
+
+Current state:
+4 1 3
+2 5 _
+6 7 8
+
+Current state:
+4 1 2
+6 5 3
+_ 7 8
+
+Current state:
+1 5 2
+6 4 3
+_ 7 8
+
+Current state:
+1 5 2
+4 7 3
+_ 6 8
+
+Current state:
+1 5 2
+4 7 3
+6 8 _
+
+Current state:
+1 2 3
+6 4 8
+_ 5 7
+
+Current state:
+1 2 3
+6 4 7
+_ 8 5
+
+Current state:
+1 2 3
+4 8 7
+_ 6 5
+
+Current state:
+1 2 3
+4 8 7
+6 5 _
+
+Current state:
+1 2 3
+6 8 4
+7 5 _
+
+Current state:
+1 2 3
+5 8 _
+4 6 7
+
+Current state:
+1 2 3
+5 6 8
+4 _ 7
+
+Current state:
+1 2 3
+_ 5 8
+7 4 6
+
+Current state:
+1 2 3
+7 8 _
+4 5 6
+
+Current state:
+1 2 3
+4 7 6
+_ 8 5
+
+Current state:
+1 2 3
+7 8 6
+4 5 _
+
+Current state:
+4 1 3
+_ 6 5
+7 2 8
+
+Current state:
+4 1 3
+6 5 _
+7 2 8
+
+Current state:
+4 1 2
+6 5 3
+7 _ 8
+
+Current state:
+1 5 2
+6 4 3
+7 _ 8
+
+Current state:
+1 2 3
+5 6 8
+4 7 _
+
+Current state:
+1 2 3
+7 8 6
+4 5 _
+
+Current state:
+_ 1 3
+4 6 5
+7 2 8
+
+Current state:
+4 1 2
+6 5 3
+7 8 _
+
+Current state:
+1 5 2
+6 4 3
+7 8 _
+
+Current state:
+1 2 3
+5 6 _
+4 7 8
+
+Current state:
+1 _ 3
+4 6 5
+7 2 8
+
+Current state:
+1 2 3
+5 _ 6
+4 7 8
+
+Current state:
+1 2 3
+_ 5 6
+4 7 8
+
+Current state:
+1 2 3
+4 5 6
+_ 7 8
+
+Current state:
+1 2 3
+4 5 6
+7 _ 8
+
+Current state:
+1 2 3
+4 5 6
+7 8 _
+
+Goal state reached!
