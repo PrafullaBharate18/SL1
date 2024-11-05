@@ -1,0 +1,272 @@
+import mysql.connector
+
+# Database connection setup
+def get_connection():
+    return mysql.connector.connect(
+        host="localhost",       # Change as per your MySQL setup
+        user="root",            # Your MySQL username
+        password="password",    # Your MySQL password
+        database="test_db"      # Your MySQL database
+    )
+
+# Function to add a new user
+def add_user(name, email):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO users (name, email) VALUES (%s, %s)"
+    cursor.execute(query, (name, email))
+    conn.commit()
+    print("User added successfully!")
+    conn.close()
+
+# Function to view all users
+def view_users():
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "SELECT * FROM users"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    conn.close()
+
+# Function to update a user by id
+def update_user(user_id, name, email):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE users SET name=%s, email=%s WHERE id=%s"
+    cursor.execute(query, (name, email, user_id))
+    conn.commit()
+    print("User updated successfully!")
+    conn.close()
+
+# Function to delete a user by id
+def delete_user(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "DELETE FROM users WHERE id=%s"
+    cursor.execute(query, (user_id,))
+    conn.commit()
+    print("User deleted successfully!")
+    conn.close()
+
+# Main menu
+def main():
+    while True:
+        print("\nDatabase Navigation Menu:")
+        print("1. Add User")
+        print("2. View Users")
+        print("3. Update User")
+        print("4. Delete User")
+        print("5. Exit")
+        
+        choice = input("Enter choice: ")
+        
+        if choice == '1':
+            name = input("Enter name: ")
+            email = input("Enter email: ")
+            add_user(name, email)
+        elif choice == '2':
+            view_users()
+        elif choice == '3':
+            user_id = int(input("Enter user ID to update: "))
+            name = input("Enter new name: ")
+            email = input("Enter new email: ")
+            update_user(user_id, name, email)
+        elif choice == '4':
+            user_id = int(input("Enter user ID to delete: "))
+            delete_user(user_id)
+        elif choice == '5':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+# Run the program
+if _name_ == "_main_":
+    main()
+
+
+
+#######################################
+
+import mysql.connector
+from mysql.connector import Error
+
+# Database connection setup
+def get_connection():
+    try:
+        conn = mysql.connector.connect(
+            host="localhost",       # Change as per your MySQL setup
+            user="root",            # Your MySQL username
+            password="password",    # Your MySQL password
+            database="test_db"      # Your MySQL database
+        )
+        if conn.is_connected():
+            return conn
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+
+# Function to add a new user
+def add_user(name, email):
+    conn = get_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            query = "INSERT INTO users (name, email) VALUES (%s, %s)"
+            cursor.execute(query, (name, email))
+            conn.commit()
+            print("User added successfully!")
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            conn.close()
+
+# Function to view all users
+def view_users():
+    conn = get_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            query = "SELECT * FROM users"
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            for row in rows:
+                print(row)
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            conn.close()
+
+# Function to update a user by id
+def update_user(user_id, name, email):
+    conn = get_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            query = "UPDATE users SET name=%s, email=%s WHERE id=%s"
+            cursor.execute(query, (name, email, user_id))
+            conn.commit()
+            print("User updated successfully!")
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            conn.close()
+
+# Function to delete a user by id
+def delete_user(user_id):
+    conn = get_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            query = "DELETE FROM users WHERE id=%s"
+            cursor.execute(query, (user_id,))
+            conn.commit()
+            print("User deleted successfully!")
+        except Error as e:
+            print(f"Error: {e}")
+        finally:
+            conn.close()
+
+# Main menu
+def main():
+    while True:
+        print("\nDatabase Navigation Menu:")
+        print("1. Add User")
+        print("2. View Users")
+        print("3. Update User")
+        print("4. Delete User")
+        print("5. Exit")
+        
+        choice = input("Enter choice: ")
+        
+        if choice == '1':
+            name = input("Enter name: ")
+            email = input("Enter email: ")
+            add_user(name, email)
+        elif choice == '2':
+            view_users()
+        elif choice == '3':
+            user_id = int(input("Enter user ID to update: "))
+            name = input("Enter new name: ")
+            email = input("Enter new email: ")
+            update_user(user_id, name, email)
+        elif choice == '4':
+            user_id = int(input("Enter user ID to delete: "))
+            delete_user(user_id)
+        elif choice == '5':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+# Run the program
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+STEPS TO RUN:-
+To run this Python code in VS Code (Visual Studio Code), follow these steps:
+
+Step-by-Step Guide:
+Install VS Code:
+
+If you haven’t installed VS Code yet, download and install it from here.
+Install Python:
+
+Make sure Python is installed on your system. You can check by running the following command in your terminal:
+bash
+Copy code
+python --version
+If it’s not installed, download Python from here.
+Install MySQL Server (if not already installed):
+
+You need a running MySQL database to interact with. Install MySQL if you haven’t already from here.
+Install MySQL Connector for Python:
+
+Open VS Code’s terminal and install the MySQL connector for Python by running:
+bash
+Copy code
+pip install mysql-connector-python
+This is required to interact with MySQL from Python.
+Set Up a New Python File:
+
+Open VS Code.
+Create a new folder (optional, but recommended for organizing your project).
+Inside that folder, create a new file (e.g., user_management.py) and paste your Python code into that file.
+Set Up Database and Table:
+
+Before running the script, you need to make sure you have a database and a users table in MySQL. You can do this by running the following SQL commands in MySQL Workbench or the MySQL command line:
+
+sql
+Copy code
+CREATE DATABASE test_db;
+USE test_db;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100)
+);
+Adjust the host, user, password, and database in the get_connection() function of your Python script if necessary.
+
+Run the Python Script:
+
+In VS Code, you can run the script in the integrated terminal.
+Open the Terminal:
+Click on Terminal in the top menu bar, then select New Terminal (or use the shortcut Ctrl + ).
+Navigate to your project folder (if you're not already in it):
+For example, if your file is in the folder C:\Users\YourUser\Documents\PythonProjects, navigate to that folder in the terminal:
+bash
+Copy code
+cd C:\Users\YourUser\Documents\PythonProjects
+Run the script by typing the following command in the terminal:
+bash
+Copy code
+python user_management.py
+
+
